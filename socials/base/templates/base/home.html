@@ -1,0 +1,498 @@
+<!-- {% extends 'main.html' %} -->
+{% load static %} 
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'styles/home.css' %}" />
+
+<!-- Icons -->
+<link rel="stylesheet" href="https://unicons.iconscout.com/release/v2.1.6/css/unicons.css">
+
+ <!-- Font-awesome -->
+ <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+ <style>
+  
+  #heart.red {
+    color: red;
+  }
+ </style>
+
+{% endblock %}
+
+<!-- Title -->
+{% block title %}
+<title>Dashboard</title>
+{% endblock %}
+
+{% block content %} 
+<nav>
+  <div class="container">
+    <div class="log">
+      <img src="{% static 'images/truffle.png' %}" style="height:75px;cursor:pointer;">
+    </div>
+
+    <!-- Search bar -->
+    <form action="/search" method="POST">
+      {% csrf_token %}
+      <div class="search-bar">
+          <input type="search" placeholder="Search for other users" name="username">
+          <button type="submit"><i class="uil uil-search"></i> </button> 
+      </div>
+      </form>
+
+
+      <div class="create">
+        {% if user.is_authenticated %}
+        <a href="{% url 'logout' %}">logout</a>
+         <button class="btn btn-primary">
+            <a href="{% url 'add_post' %}" style="color: #fff;text-decoration: none;">Create Post</a>
+         </button>
+          <div class="profile-photo" style="cursor:pointer;">
+            <a class="profile" href="{% url 'show_profile_page' user.profile.id %}" style="text-decoration: none;">
+           <img src="{{user_profile.profileimg.url}}" alt="profile-photo">
+            </a>
+         </div>
+        {% else %}
+       <a href="{% url 'signup' %}">Signup</a>
+      <a href="{% url 'login' %}">Login</a>
+       {% endif %}
+      </div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+
+<main style="padding-top: 80px; min-height: 100vh; background: var(--color-light);">
+  <div class="container">
+      <div class="left">
+        {% if user.is_authenticated %}
+
+          <div class="profile">
+              <div class="profile-photo">
+                  <a href="{% url 'show_profile_page' user.profile.id %}"><img src="{{user_profile.profileimg.url}}" alt="profile-picture"></a>
+              </div>
+              <div class="handle">
+                  <h4 style="color: black;">{{user_profile.fname}} {{user_profile.lname}}</h4>
+                  <p class="text-muted" style="color: black !important; margin-bottom: 0.5rem;">
+                      @{{user_profile.user.username}}
+                  </p>
+                  <p style="font-size: 0.85rem; color: black; margin-bottom: 0;">
+                      {{user_profile.description|linebreaksbr}}
+                  </p>
+              </div>
+          </div>
+  
+         {% endif %}
+         <!-- sidebar -->
+         <div class="sidebar">
+          <a class="menu-item active" href="{% url 'home' %}" style="text-decoration: none;">
+              <span><i class="uil uil-home"></i></span><h3>Home</h3>
+          </a>
+          {% if user.is_authenticated %}
+          <a class="menu-item" href="{% url 'add_post' %}" style="text-decoration: none;">
+              <span><i class="uil uil-compass"></i></span><h3>
+                Add Post
+            </h3>
+          </a>
+              
+              <a class="menu-item" href="{% url 'edit_profile_page' user.profile.id %}" style="text-decoration: none;">
+              <span><i class="uil uil-edit"></i></span>
+              <h3>Edit Profile</h3>
+              </a>
+
+              <a class="menu-item" href="{% url 'inbox' %}" style="text-decoration: none;">
+              <span><i class="uil uil-envelope"></i></span>
+              <h3>Messages</h3>
+              </a>
+
+              
+              <a class="menu-item" href="{% url 'show_profile_page' user.profile.id %}" style="text-decoration: none;">
+              <span><i class="uil uil-bookmark"></i></span><h3>Profile</h3>
+              </a>
+
+              <a class="menu-item" href="/password" style="text-decoration: none;">
+                <span><i class="uil uil-lock"></i></span><h3>Change Password</h3>
+                </a>
+          {% endif %}
+         </div>
+         <!-- end of sidebar -->
+         <button class="btn btn-primary">
+            <a href="{% url 'add_post' %}" style="color: #fff;text-decoration: none;">Create Post</a>
+         </button>
+      </div>
+      <!-- END OF LEFT -->
+
+      <div class="middle">
+          
+          <!-- STORIES BAR -->
+          <div class="insta-stories">
+              <div class="story-item" onclick="openStory('https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?w=800', 'image')">
+                  <div class="story-ring">
+                      <img src="https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?w=150&fit=crop&q=80" alt="Your Story" style="border-radius: 50%;">
+                  </div>
+                  <span>Your story</span>
+              </div>
+              <div class="story-item" onclick="openStory('https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=800', 'image')">
+                  <div class="story-ring">
+                      <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&fit=crop&q=80" alt="Jane" style="border-radius: 50%;">
+                  </div>
+                  <span>jane_doe</span>
+              </div>
+              <div class="story-item" onclick="openStory('https://www.w3schools.com/html/mov_bbb.mp4', 'video')">
+                  <div class="story-ring">
+                      <img src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=150&fit=crop&q=80" alt="Alex" style="border-radius: 50%;">
+                  </div>
+                  <span>alexander</span>
+              </div>
+              <div class="story-item" onclick="openStory('https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4', 'video')">
+                  <div class="story-ring">
+                      <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&fit=crop&q=80" alt="Sam" style="border-radius: 50%;">
+                  </div>
+                  <span>sam_smith</span>
+              </div>
+              <div class="story-item" onclick="openStory('https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=800', 'image')">
+                  <div class="story-ring">
+                      <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&fit=crop&q=80" alt="Emma" style="border-radius: 50%;">
+                  </div>
+                  <span>emma_w</span>
+              </div>
+              <div class="story-item" onclick="openStory('https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=800', 'image')">
+                  <div class="story-ring">
+                      <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&fit=crop&q=80" alt="John" style="border-radius: 50%;">
+                  </div>
+                  <span>john_doe</span>
+              </div>
+              <div class="story-item" onclick="openStory('https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=800', 'image')">
+                  <div class="story-ring">
+                      <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=150&fit=crop&q=80" alt="Olivia" style="border-radius: 50%;">
+                  </div>
+                  <span>olivia_w</span>
+              </div>
+              <div class="story-item" onclick="openStory('https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=800', 'image')">
+                  <div class="story-ring">
+                      <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&fit=crop&q=80" alt="Liam" style="border-radius: 50%;">
+                  </div>
+                  <span>liam_k</span>
+              </div>
+          </div>
+
+          <!-- Story Modal -->
+          <div class="modal fade" id="storyModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" style="max-width: 75vw;">
+              <div class="modal-content bg-dark border-0 rounded" style="overflow: hidden;">
+                <div class="modal-body p-0 text-center position-relative d-flex justify-content-center align-items-center" style="min-height: 75vh;">
+                  <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3" style="z-index: 1050;" data-bs-dismiss="modal" aria-label="Close" onclick="document.getElementById('storyModalVideo').pause();"></button>
+                  <img id="storyModalImg" src="" class="img-fluid" style="max-height: 75vh; width: auto; object-fit: contain;" />
+                  <video id="storyModalVideo" class="w-100" style="max-height: 75vh; display: none; object-fit: contain;" autoplay controls muted playsinline></video>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- FEED -->
+          <div class="feeds">
+              <!-- FEED 1 -->
+              {% if count_posts == 0  %}
+              <div class="empty-state">
+                <div class="empty-state__content">
+                  <div class="empty-state__icon">
+                    <img src="{% static 'images/home/not-found.webp' %}" alt="">
+                  </div>
+                  <div class="empty-state__message" style="color: #9a35dd;font-weight: bold;font-size: 30px; text-align: center;">No posts has been added yet.</div>
+                  <br/><br/><br/>
+                </div>
+              </div>
+              {% else %}
+              {% for post in all_posts reversed %}
+              <div class="feed">
+                  <div class="head">
+                      <div class="user">
+                          <div class="profile-photo">
+                            <a href="{% url 'show_profile_page' post.profileid %}">
+                              <img src="{{ post.get_owner_pp }}" alt="profile-13" style="width:50px;">
+                            </a>
+                          </div>
+                          <div class="ingo">
+                              <h3 style="margin-bottom: 2px;">{{ post.author }}</h3>
+                              {% if post.location %}
+                              <small style="color: gray;"><i class="fa-solid fa-location-dot"></i> {{ post.location }}</small>
+                              {% endif %}
+                          </div>
+                          
+                      </div>
+                      <span class="edit">
+                          <!-- <i class="uil uil-ellipsis-h"> -->
+                            <ul>
+                                <li> 
+                                  <!-- Edit post -->
+                                  {% if user.is_authenticated %}  
+                                  {% if user.id == post.author.id %}
+                                  <a href="{% url 'update_post' post.pk %}" class="pencil-icon"><i class="fa-solid fa-pencil"></i></a>
+                                   &nbsp;&nbsp;
+                                  <!-- Delete post -->
+                                  <a href="{% url 'delete_post' post.pk %}" class="delete-icon"><i class="fa-solid fa-trash-arrow-up"></i></a> 
+                                  {% endif %}
+                                  {% endif %}
+                              </li>
+                            </ul>
+                          <!-- </i> -->
+                        
+                      </span>
+
+                  </div>
+                  <div class="photo">
+                    <a href="{{ post.image.url }}">
+                      <img src="{{ post.image.url }}" alt="feed-1" style="height: 450px;">
+                    </a>
+                  </div>
+                  <div class="action-buttons">
+                      <div class="interaction-buttons">
+                        <!-- Like post -->
+                             <a href="{% if user.is_authenticated %}javascript:void(0);{% else %}{% url 'login' %}{% endif %}" {% if user.is_authenticated %}onclick="toggleLike({{post.id}})"{% endif %} style="text-decoration: none; color: {% if post.id in user_liked_posts %}var(--color-danger){% else %}#000{% endif %};" id="like-btn-{{post.id}}">
+                              {% if post.id in user_liked_posts %}
+                              <i class="fa-solid fa-heart" id="like-icon-{{post.id}}"></i>
+                              {% else %}
+                              <i class="fa-regular fa-heart" id="like-icon-{{post.id}}"></i>
+                              {% endif %}
+                            </a>
+                            <a {% if user.is_authenticated %}data-bs-toggle="modal" data-bs-target="#commentModal{{post.id}}"{% else %}href="{% url 'login' %}"{% endif %} style="cursor: pointer; color: #000;">
+                                  <span><i class="uil uil-comment-dots"></i></span>
+                            </a>
+                            <a href="#" onclick="alert('Post link copied to clipboard!'); return false;" style="color: #000;">
+                                <span><i class="uil uil-share-alt"></i></span>
+                            </a>
+                      </div>
+
+                         <!-- Downloading & Saving the post -->
+                         <div style="display: flex; gap: 15px; align-items: center;">
+                           <a href="{{post.image.url}}" class="flex items-center space-x-2 flex-1 justify-end" style="text-decoration: none;" download>
+                            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="25" height="25" preserveAspectRatio="xMidYMid meet" viewBox="0 0 16 16"><g fill="currentColor"><path d="M8.5 1.5A1.5 1.5 0 0 1 10 0h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h6c-.314.418-.5.937-.5 1.5v6h-2a.5.5 0 0 0-.354.854l2.5 2.5a.5.5 0 0 0 .708 0l2.5-2.5A.5.5 0 0 0 10.5 7.5h-2v-6z"/></g></svg> 
+                          </a>
+                          <a href="{% if user.is_authenticated %}{% url 'save_post' %}?post_id={{post.id}}{% else %}{% url 'login' %}{% endif %}" style="color: #000; text-decoration: none;">
+                              {% if post.id in saved_posts %}
+                              <i class="fa-solid fa-bookmark" style="font-size: 1.5rem;"></i>
+                              {% else %}
+                              <i class="fa-regular fa-bookmark" style="font-size: 1.5rem;"></i>
+                              {% endif %}
+                          </a>
+                        </div>
+                  </div>
+
+                <!-- Like section -->
+                  <div class="liked-by">
+                    {% if post.no_of_likes == 0 %}
+                    <p id="like-count-{{post.id}}"><b>No Likes</b></p>
+                    {% else %}
+                      <p id="like-count-{{post.id}}"><b>Liked by {{post.no_of_likes}} person{% if post.no_of_likes > 1 %}s{% endif %}</b></p>
+                    {% endif %}
+                  </div>
+      
+                  <div class="caption">
+                      <p><b>{{ post.author }}</b> {{ post.caption|safe }}</p>
+                  </div>
+                  
+                  <div class="comments-preview" style="margin-top: 5px; margin-bottom: 5px; font-size: 0.9rem;">
+                      {% for comment in post.comments.all|slice:":2" %}
+                      <p style="margin-bottom: 2px;"><b>{{ comment.name }}</b> {{ comment.body }}</p>
+                      {% endfor %}
+                  </div>
+
+                  {% if post.comments.count > 2 %}
+                  <a {% if user.is_authenticated %}data-bs-toggle="modal" data-bs-target="#commentModal{{post.id}}"{% else %}href="{% url 'login' %}"{% endif %} style="cursor: pointer; color: var(--color-gray); font-size: 0.9rem;">
+                    View all {{ post.comments.count }} comments
+                  </a>
+                  {% elif post.comments.count > 0 %}
+                  <a {% if user.is_authenticated %}data-bs-toggle="modal" data-bs-target="#commentModal{{post.id}}"{% else %}href="{% url 'login' %}"{% endif %} style="cursor: pointer; color: var(--color-gray); font-size: 0.9rem;">
+                    View comments
+                  </a>
+                  {% else %}
+                  <a {% if user.is_authenticated %}href="{% url 'add_comment' post.pk %}"{% else %}href="{% url 'login' %}"{% endif %} style="cursor: pointer; color: var(--color-gray); font-size: 0.9rem;">
+                    Add a comment...
+                  </a>
+                  {% endif %}
+
+
+</div>
+
+{% endfor %}
+{% endif %}
+
+</div>
+</div>
+<div class="right">
+      <div class="friend-requests">
+          <h4 style="color:rgb(107,76,230)">User Suggestions</h4>
+          <div class="request">
+              <div class="ingo">
+                {% for user in suggestion_users %}
+                  <div class="profile-photo">
+                    <a href="{% url 'show_profile_page' user.id %}">
+                      <img src="{{ user.profileimg.url }}">
+                    </a>
+                  </div>
+                  <div>
+                      <h5>{{user.fname}} {{user.lname}}</h5>
+                      <p class="text-muted" style="font-size: 0.85rem; margin-bottom: 2px;">
+                            {% if user.location %}
+                                <i class="fa-solid fa-location-dot"></i> {{user.location}}
+                            {% endif %}
+                      </p>
+                      <p class="text-muted" style="font-size: 0.8rem; line-height: 1.2;">
+                            {{user.description|truncatechars:50}}
+                      </p>
+                  </div>
+                  
+                  <hr>
+                  {% endfor %}
+                  </div>
+         </div>
+      </div>
+    </div>
+  </div>
+</main>
+</div>
+
+<!-- Modals must be placed outside of complex stacking contexts to avoid backdrop issues -->
+{% for post in all_posts %}
+<div class="modal fade" id="commentModal{{post.id}}" tabindex="-1" aria-labelledby="commentModalLabel{{post.id}}" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="commentModalLabel{{post.id}}">Comments</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="modal-comments-list-{{post.id}}">
+
+        {% if not post.comments.all %}
+        <div id="no-comments-{{post.id}}">No Comments yet..</div>
+        {% else %}
+        {% for comment in post.comments.all %}
+        <div>
+          <strong>{{ comment.name }} - <span style="font-size: 0.8em; color: gray;">{{ comment.date_added }}</span></strong>
+          <br/>
+          {{ comment.body }}
+          <br/>
+          <hr style="margin: 5px 0;">
+        </div>
+        {% endfor %} 
+        {% endif %}
+        
+      </div>
+      <div class="modal-footer" style="display: flex; flex-wrap: nowrap; align-items: center; justify-content: space-between;">
+        <input type="text" id="ajax-comment-input-{{post.id}}" class="form-control" placeholder="Add a comment..." style="border-radius: 20px; flex-grow: 1; margin-right: 10px;">
+        <button type="button" class="btn btn-primary" onclick="submitAjaxComment({{post.id}})" style="border-radius: 20px;">Post</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
+
+<script type="text/javascript">
+
+ (function() {
+  const heart = document.getElementById('heart');
+  if(heart){
+    heart.addEventListener('click', function() {
+      heart.classList.toggle('red');
+    });
+  }
+})();
+
+function openStory(src, type='image') {
+  const img = document.getElementById('storyModalImg');
+  const vid = document.getElementById('storyModalVideo');
+  
+  if (type === 'video') {
+    img.style.display = 'none';
+    vid.style.display = 'block';
+    vid.src = src;
+    vid.play();
+  } else {
+    vid.style.display = 'none';
+    img.style.display = 'block';
+    img.src = src;
+    vid.pause();
+  }
+  
+  var myModal = new bootstrap.Modal(document.getElementById('storyModal'));
+  myModal.show();
+}
+
+function toggleLike(postId) {
+    fetch(`/like-post?post_id=${postId}`, {
+        method: 'GET',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        const btn = document.getElementById(`like-btn-${postId}`);
+        const icon = document.getElementById(`like-icon-${postId}`);
+        const countText = document.getElementById(`like-count-${postId}`);
+        
+        if (data.status === 'liked') {
+            btn.style.color = 'var(--color-danger)';
+            icon.classList.remove('fa-regular');
+            icon.classList.add('fa-solid');
+        } else {
+            btn.style.color = '#000';
+            icon.classList.remove('fa-solid');
+            icon.classList.add('fa-regular');
+        }
+        
+        if (data.likes_count === 0) {
+            countText.innerHTML = '<b>No Likes</b>';
+        } else {
+            countText.innerHTML = `<b>Liked by ${data.likes_count} person${data.likes_count > 1 ? 's' : ''}</b>`;
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+function submitAjaxComment(postId) {
+    const inputField = document.getElementById(`ajax-comment-input-${postId}`);
+    const bodyText = inputField.value.trim();
+    if (!bodyText) return;
+
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    fetch(`/add-comment-ajax/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken
+        },
+        body: JSON.stringify({
+            post_id: postId,
+            body: bodyText
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            inputField.value = '';
+            
+            const noCommentsDiv = document.getElementById(`no-comments-${postId}`);
+            if (noCommentsDiv) noCommentsDiv.remove();
+            
+            const commentList = document.getElementById(`modal-comments-list-${postId}`);
+            const newCommentHtml = `
+                <div>
+                  <strong>${data.name} - <span style="font-size: 0.8em; color: gray;">${data.date_added}</span></strong>
+                  <br/>
+                  ${data.body}
+                  <br/>
+                  <hr style="margin: 5px 0;">
+                </div>
+            `;
+            commentList.insertAdjacentHTML('beforeend', newCommentHtml);
+            commentList.scrollTop = commentList.scrollHeight;
+        } else {
+            console.error('Error posting comment:', data.message);
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+</script>
+{% endblock %}

@@ -1,0 +1,11 @@
+.env
+env/
+socials/base/__pycache__/
+socials/base/migrations/__pycache__/
+socials/socials/__pycache__/
+socials/staticfiles/
+*.log
+*.pot
+*.pyc
+__pycache__
+

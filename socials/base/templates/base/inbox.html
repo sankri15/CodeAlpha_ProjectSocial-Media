@@ -1,0 +1,63 @@
+{% extends 'main.html' %}
+{% load static %}
+
+{% block title %}
+<title>Inbox</title>
+{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'styles/home.css' %}" />
+<style>
+  .inbox-container {
+    max-width: 800px;
+    margin: 40px auto;
+    background: var(--color-white);
+    backdrop-filter: blur(12px);
+    border-radius: var(--card-border-radius);
+    padding: 2rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  }
+  .chat-user {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+    transition: background 0.3s;
+    text-decoration: none;
+    color: inherit;
+  }
+  .chat-user:hover {
+    background: rgba(0,0,0,0.05);
+  }
+  .chat-user img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<main style="padding-top: 80px; min-height: 100vh; background: var(--color-light);">
+  <div class="inbox-container">
+    <h2 style="margin-bottom: 1rem;">Your Messages</h2>
+    <a href="{% url 'home' %}" class="btn btn-primary" style="margin-bottom: 1rem;"><i class="uil uil-arrow-left"></i> Back to Home</a>
+    
+    {% if chat_users %}
+      {% for u in chat_users %}
+        <a href="{% url 'chat_thread' u.username %}" class="chat-user">
+          <img src="{{ u.profile.profileimg.url }}" alt="{{ u.username }}">
+          <div>
+            <h4>{{ u.username }}</h4>
+            <p class="text-muted">Tap to chat with {{ u.first_name|default:u.username }}</p>
+          </div>
+        </a>
+      {% endfor %}
+    {% else %}
+      <p>No messages yet. Start a conversation with someone you follow!</p>
+    {% endif %}
+  </div>
+</main>
+{% endblock %}
